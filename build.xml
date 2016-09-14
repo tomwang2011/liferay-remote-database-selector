@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Liferay-Remote-Database-Selector" default="startDB" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+	<property file="build-ext.properties" />
+	<property file="build.properties" />
+
+	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
+
+	<fail unless="portal-ee.dir" message="Required property: portal-ee.dir is not set, please set it to your Portal-EE directory"/>
+	<fail unless="tomcat.dir" message="Required property: tomcat.dir is not set, please set it to your tomcat directory"/>
+	<fail unless="lp.plugins.dir" message="Required property: lp.plugins.dir is not set, please set it to your liferay-plugins directory"/>
+	<fail unless="remote.host" message="Required property: remote.host is not set"/>
+	<fail unless="remote.portal" message="Required property: remote.portal is not set"/>
+</project>
