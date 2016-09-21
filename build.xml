@@ -10,4 +10,18 @@
 	<fail unless="lp.plugins.dir" message="Required property: lp.plugins.dir is not set, please set it to your liferay-plugins directory"/>
 	<fail unless="remote.host" message="Required property: remote.host is not set"/>
 	<fail unless="remote.portal" message="Required property: remote.portal is not set"/>
+
+	<target name="startDB">
+		<input unless:set="database.type" message="database: " addproperty="database.type" />
+
+		<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+			<property name="database.type" value="${database.type}" />
+			<property name="todir" value="${portal.dir}/lib/development" />
+		</ant>
+
+		<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+			<property name="database.type" value="${database.type}" />
+			<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
+		</ant>
+	</target>
 </project>
