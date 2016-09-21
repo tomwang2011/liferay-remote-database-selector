@@ -11,7 +11,19 @@
 	<fail unless="remote.host" message="Required property: remote.host is not set"/>
 	<fail unless="remote.portal" message="Required property: remote.portal is not set"/>
 
+	<macrodef name="compile">
+		<sequential>
+			<delete dir="classes" />
+
+			<mkdir dir="classes" />
+
+			<javac srcdir="src" destdir="classes" classpath="lib" debug="on" />
+		</sequential>
+	</macrodef>
+
 	<target name="startDB">
+		<compile />
+
 		<input unless:set="database.type" message="database: " addproperty="database.type" />
 
 		<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
@@ -23,5 +35,9 @@
 			<property name="database.type" value="${database.type}" />
 			<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
 		</ant>
+
+		<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
+
+		<createPropertiesTask dbType="${database.type}" />
 	</target>
 </project>
