@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Liferay-Remote-Database-Selector" default="startDB" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="Liferay-Remote-Database-Selector" default="startDB" basedir="." xmlns:if="ant:if" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:unless="ant:unless">
 	<property file="build-ext.properties" />
 	<property file="build.properties" />
 
@@ -10,6 +10,12 @@
 	<fail unless="lp.plugins.dir" message="Required property: lp.plugins.dir is not set, please set it to your liferay-plugins directory"/>
 	<fail unless="remote.host" message="Required property: remote.host is not set"/>
 	<fail unless="remote.portal" message="Required property: remote.portal is not set"/>
+
+	<path id="ivy.lib.path">
+		<fileset dir="lib" includes="ivy-2.4.0.jar" />
+	</path>
+
+	<taskdef classpathref="ivy.lib.path" resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" />
 
 	<macrodef name="compile">
 		<sequential>
@@ -39,5 +45,21 @@
 		<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
 
 		<createPropertiesTask dbType="${database.type}" />
+	</target>
+
+	<!-- Use portal's source formatter to format source. -->
+
+	<target name="format-source">
+		<ivy:cachepath
+			file="dependencies/com.liferay.source.formatter/ivy.xml"
+			pathid="source.formatter.classpath"
+			log="download-only"
+		/>
+
+		<taskdef classpathref="source.formatter.classpath" resource="com/liferay/source/formatter/ant/taskdefs.properties" />
+
+		<ivy:settings file="ivy-settings.xml" />
+
+		<format-source baseDir="src" />
 	</target>
 </project>
