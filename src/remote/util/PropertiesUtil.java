@@ -14,9 +14,6 @@
 
 package remote.util;
 
-/**
- * @author Tom Wang
- */
 import java.io.IOException;
 import java.io.Reader;
 
@@ -24,6 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.Properties;
+
+/**
+ * @author Tom Wang
+ */
 public class PropertiesUtil {
 
 	public static Properties loadProperties(Path filePath) throws IOException {
