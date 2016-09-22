@@ -66,13 +66,13 @@ public class CreatePropertiesTask extends Task{
 				"webapps/ROOT/WEB-INF/classes/portal-ext.properties");
 
 			Files.copy(
-					portalExtPath, tomcatPortalExtPath,
-					StandardCopyOption.REPLACE_EXISTING);
+				portalExtPath, tomcatPortalExtPath,
+				StandardCopyOption.REPLACE_EXISTING);
 
 			_createTestExtProperties(tomcatPortalExtPath, _dbType, properties);
 		}
-		catch (Exception ex) {
-			throw new BuildException(ex);
+		catch (IOException ioe) {
+			throw new BuildException(ioe);
 		}
 	}
 
