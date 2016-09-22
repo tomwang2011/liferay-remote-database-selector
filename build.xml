@@ -27,6 +27,13 @@
 		</sequential>
 	</macrodef>
 
+	<target name="killSSHTunnel">
+		<exec executable="sh">
+			<arg value="-c" />
+			<arg value="ps axf | grep 9999 | grep -v grep | awk &apos;{print &quot;kill -9 &quot; $1}	&apos;| sh" />
+		</exec>
+	</target>
+
 	<target name="startDB">
 		<compile />
 
