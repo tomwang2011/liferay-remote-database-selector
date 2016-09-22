@@ -15,17 +15,20 @@
 package remote.tasks;
 
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+
 import remote.util.PropertiesUtil;
 
 /**
  * @author tom
  */
-public class CreateTunnelTask extends Task{
+public class CreateTunnelTask extends Task {
 
 	@Override
 	public void execute() throws BuildException {
@@ -40,7 +43,8 @@ public class CreateTunnelTask extends Task{
 			tunnelTask.add("ssh");
 			tunnelTask.add("-f");
 			tunnelTask.add(
-				buildProperties.getProperty("remote.username") + "@" + remoteHost);
+				buildProperties.getProperty("remote.username") + "@" +
+					remoteHost);
 			tunnelTask.add("-L");
 
 			Properties jdbcSettings = PropertiesUtil.loadProperties(

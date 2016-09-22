@@ -44,6 +44,7 @@ public class StringUtil {
 			sb.append(newSub);
 
 			x = y + length;
+
 			y = s.indexOf(oldSub, x);
 		}
 
