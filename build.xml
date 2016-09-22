@@ -45,6 +45,30 @@
 		<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
 
 		<createPropertiesTask dbType="${database.type}" />
+
+		<if>
+			<or>
+				<equals arg1="${database.type}" arg2="db2" />
+				<equals arg1="${database.type}" arg2="oracle" />
+				<equals arg1="${database.type}" arg2="sybase" />
+			</or>
+			<then>
+				<if>
+					<not>
+						<available file="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db" type="dir" />
+					</not>
+					<then>
+						<copy todir="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db">
+							<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
+						</copy>
+					</then>
+				</if>
+
+				<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
+
+				<deploydaodbtask />
+			</then>
+		</if>
 	</target>
 
 	<!-- Use portal's source formatter to format source. -->
