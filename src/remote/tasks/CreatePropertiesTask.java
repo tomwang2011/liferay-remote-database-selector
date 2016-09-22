@@ -14,19 +14,18 @@
 
 package remote.tasks;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -42,11 +41,10 @@ public class CreatePropertiesTask extends Task {
 	@Override
 	public void execute() throws BuildException {
 		try {
-			Properties buildProperties = PropertiesUtil.loadProperties(
+			Properties properties = PropertiesUtil.loadProperties(
 				Paths.get("build.properties"));
 
-			Path portalPath = Paths.get(
-				buildProperties.getProperty("portal.dir"));
+			Path portalPath = Paths.get(properties.getProperty("portal.dir"));
 
 			Path portalImplTestPath = portalPath.resolve("portal-impl/test");
 
@@ -62,22 +60,20 @@ public class CreatePropertiesTask extends Task {
 					StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			_createTestExtProperties(
-				portalTestExtPath, _dbType, buildProperties);
+			_createTestExtProperties(portalTestExtPath, _dbType, properties);
 
 			Path portalExtPath = portalPath.resolve(
 				"portal-impl/src/portal-ext.properties");
 
 			Path tomcatPortalExtPath = Paths.get(
-				buildProperties.getProperty("tomcat.dir"),
+				properties.getProperty("tomcat.dir"),
 				"webapps/ROOT/WEB-INF/classes/portal-ext.properties");
 
 			Files.copy(
 				portalExtPath, tomcatPortalExtPath,
 				StandardCopyOption.REPLACE_EXISTING);
 
-			_createTestExtProperties(
-				tomcatPortalExtPath, _dbType, buildProperties);
+			_createTestExtProperties(tomcatPortalExtPath, _dbType, properties);
 		}
 		catch (IOException ioe) {
 			throw new BuildException(ioe);
@@ -89,66 +85,61 @@ public class CreatePropertiesTask extends Task {
 	}
 
 	private static void _createTestExtProperties(
-			Path extPropertiesFilePath, String dbType,
-			Properties buildProperties)
+			Path filePath, String dbType, Properties properties)
 		throws IOException {
 
-		Properties extProperties = new Properties();
+		StringBuilder sb = new StringBuilder();
 
-		if (Files.exists(extPropertiesFilePath)) {
-
-			// Load original ext properties and clean up jdbc settings.
-
-			try (Reader reader = Files.newBufferedReader(
-					extPropertiesFilePath)) {
-
-				buildProperties.load(reader);
-
-				Set<Entry<Object, Object>> entries = buildProperties.entrySet();
-
-				Iterator<Entry<Object, Object>> iterator = entries.iterator();
-
-				while (iterator.hasNext()) {
-					Entry<Object, Object> entry = iterator.next();
-
-					String name = String.valueOf(entry.getKey());
-
-					if (name.startsWith("jdbc.")) {
-						iterator.remove();
-					}
-				}
-			}
-		}
-
-		extProperties.setProperty(
-			"liferay.home", buildProperties.getProperty("liferay.home"));
-		extProperties.setProperty(
-			"lp.plugins.dir", buildProperties.getProperty("lp.plugins.dir"));
+		sb.append("liferay.home=");
+		sb.append(properties.getProperty("liferay.home"));
+		sb.append('\n');
+		sb.append("lp.plugins.dir=");
+		sb.append(properties.getProperty("lp.plugins.dir"));
+		sb.append('\n');
 
 		Properties jdbcSettings = PropertiesUtil.loadProperties(
 			Paths.get("settings.properties"));
 
-		extProperties.setProperty(
-			"jdbc.default.driverClassName",
+		sb.append("jdbc.default.driverClassName=");
+		sb.append(
 			jdbcSettings.getProperty(dbType + ".jdbc.default.driverClassName"));
+		sb.append('\n');
+		sb.append("jdbc.default.url=");
+		sb.append(jdbcSettings.getProperty(dbType + ".jdbc.default.url"));
+		sb.append('\n');
+		sb.append("jdbc.default.username=");
+		sb.append(jdbcSettings.getProperty(dbType + ".jdbc.default.username"));
+		sb.append('\n');
+		sb.append("jdbc.default.password=");
+		sb.append(jdbcSettings.getProperty(dbType + ".jdbc.default.password"));
+		sb.append('\n');
 
-		String sshTunnelingPort = buildProperties.getProperty(
-			"ssh.tunneling.port");
+		if (Files.exists(filePath)) {
+			List<String> lines = Files.readAllLines(filePath);
 
-		String jdbcDefaultURL = StringUtil.replace(
-			jdbcSettings.getProperty(dbType + ".jdbc.default.url"),
-			"%ssh.tunneling.port%", sshTunnelingPort);
+			for (String line : lines) {
+				if (!line.startsWith("jdbc") &&
+					!line.startsWith("liferay.home") &&
+					!line.startsWith("lp.plugins.dir")) {
 
-		extProperties.setProperty("jdbc.default.url", jdbcDefaultURL);
-		extProperties.setProperty(
-			"jdbc.default.username",
-			jdbcSettings.getProperty(dbType + ".jdbc.default.username"));
-		extProperties.setProperty(
-			"jdbc.default.password",
-			jdbcSettings.getProperty(dbType + ".jdbc.default.password"));
+					sb.append(line);
+					sb.append('\n');
+				}
+			}
 
-		try (Writer writer = Files.newBufferedWriter(extPropertiesFilePath)) {
-			extProperties.store(writer, null);
+			Files.delete(filePath);
+		}
+
+		Files.createFile(filePath);
+
+		String string = StringUtil.replace(
+			sb.toString(), "%database.port%",
+			properties.getProperty("database.port"));
+
+		try (BufferedWriter bufferedWriter = Files.newBufferedWriter(
+				filePath, Charset.defaultCharset(), StandardOpenOption.APPEND))
+		{
+			bufferedWriter.append(string);
 		}
 	}
 
