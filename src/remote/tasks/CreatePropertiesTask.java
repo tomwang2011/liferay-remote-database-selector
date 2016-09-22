@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -148,7 +149,20 @@ public class CreatePropertiesTask extends Task {
 			jdbcSettings.getProperty(dbType + ".jdbc.default.password"));
 
 		try (Writer writer = Files.newBufferedWriter(extPropertiesFilePath)) {
-			extProperties.store(writer, null);
+			Enumeration e = extProperties.propertyNames();
+
+			StringBuilder sb = new StringBuilder();
+
+			while (e.hasMoreElements()) {
+				String key = (String)e.nextElement();
+
+				sb.append(key);
+				sb.append('=');
+				sb.append(extProperties.getProperty(key));
+				sb.append('\n');
+			}
+
+			writer.append(sb);
 		}
 	}
 
