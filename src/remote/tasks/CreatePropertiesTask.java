@@ -17,23 +17,27 @@ package remote.tasks;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+
 import remote.util.PropertiesUtil;
 import remote.util.StringUtil;
 
 /**
  * @author Tom Wang
  */
-public class CreatePropertiesTask extends Task{
+public class CreatePropertiesTask extends Task {
 
 	@Override
 	public void execute() throws BuildException {

@@ -18,17 +18,15 @@ package remote.util;
  * @author Tom Wang
  */
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
 
+import java.util.Properties;
 public class PropertiesUtil {
 
-	public static Properties loadProperties(Path filePath)
-		throws IOException {
-
+	public static Properties loadProperties(Path filePath) throws IOException {
 		Properties properties = new Properties();
 
 		try (Reader reader = Files.newBufferedReader(filePath)) {
@@ -46,11 +44,11 @@ public class PropertiesUtil {
 		}
 
 		String extFileName =
-			fileName.substring(0,index) + "-ext" + fileName.substring(index);
+			fileName.substring(0, index) + "-ext" + fileName.substring(index);
 
 		Path extFilePath = filePath.resolveSibling(extFileName);
 
-		if(Files.exists(extFilePath)) {
+		if (Files.exists(extFilePath)) {
 			try (Reader reader = Files.newBufferedReader(extFilePath)) {
 				properties.load(reader);
 			}
