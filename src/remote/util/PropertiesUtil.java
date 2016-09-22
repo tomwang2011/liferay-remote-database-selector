@@ -19,6 +19,7 @@ package remote.util;
  */
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -30,8 +31,8 @@ public class PropertiesUtil {
 
 		Properties properties = new Properties();
 
-		try (InputStream in = Files.newInputStream(filePath)) {
-			properties.load(in);
+		try (Reader reader = Files.newBufferedReader(filePath)) {
+			properties.load(reader);
 		}
 
 		Path fileNamePath = filePath.getFileName();
@@ -50,8 +51,8 @@ public class PropertiesUtil {
 		Path extFilePath = filePath.resolveSibling(extFileName);
 
 		if(Files.exists(extFilePath)) {
-			try (InputStream in = Files.newInputStream(extFilePath)) {
-				properties.load(in);
+			try (Reader reader = Files.newBufferedReader(extFilePath)) {
+				properties.load(reader);
 			}
 		}
 
