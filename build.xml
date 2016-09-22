@@ -67,6 +67,12 @@
 				<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
 
 				<deploydaodbtask />
+
+				<taskdef name="createTunnelTask" classname="remote.tasks.CreateTunnelTask" classpath="classes" />
+
+				<createTunnelTask dbType="${database.type}" />
+
+				<delete dir="${portal.dir}/modules/private" quiet="true" />
 			</then>
 		</if>
 	</target>
