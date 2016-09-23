@@ -1,5 +1,5 @@
 .ant-targets-build.xml
-build-ext.properties
+*-ext.properties
 bundle/*
 classes/*
 deploy/*

@@ -4,6 +4,7 @@
 	<property file="build.properties" />
 	<property file="settings-ext.properties" />
 	<property file="settings.properties" />
+	<property file="test-ext.properties" />
 
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
 	<taskdef classpath="lib/jsch-0.1.54.jar" resource="net/sf/antcontrib/antlib.xml" />
@@ -14,6 +15,7 @@
 	<fail unless="lp.plugins.dir" message="Required property: lp.plugins.dir is not set, please set it to your liferay-plugins directory"/>
 	<fail unless="remote.host" message="Required property: remote.host is not set"/>
 	<fail unless="remote.portal" message="Required property: remote.portal is not set"/>
+	<fail unless="test.jdbc.drivers.url" message="Required property: test.jdbc.drivers.url is not set"/>
 
 	<path id="ivy.lib.path">
 		<fileset dir="lib" includes="ivy-2.4.0.jar" />
@@ -41,11 +43,13 @@
 			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
 				<property name="database.type" value="@{database.type}" />
 				<property name="todir" value="${portal.dir}/lib/development" />
+				<property file="test-ext.properties" />
 			</ant>
 
 			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
 				<property name="database.type" value="@{database.type}" />
 				<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
+				<property file="test-ext.properties" />
 			</ant>
 
 			<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
@@ -92,6 +96,8 @@
 	</macrodef>
 
 	<target name="startDB-db2">
+		<fail unless="database.db2.password" message="Required property: database.db2.password is not set"/>
+
 		<startDB
 			database.type="db2"
 			database.port="${db2.port}"
@@ -113,6 +119,8 @@
 	</target>
 
 	<target name="startDB-postgresql">
+		<fail unless="database.postgresql.password" message="Required property: database.postgresql.password is not set"/>
+
 		<startDB
 			database.type="postgresql"
 			database.port="${postgresql.port}"
@@ -120,6 +128,8 @@
 	</target>
 
 	<target name="startDB-sybase">
+		<fail unless="database.sybase.password" message="Required property: database.sybase.password is not set"/>
+
 		<startDB
 			database.type="sybase"
 			database.port="${sybase.port}"
