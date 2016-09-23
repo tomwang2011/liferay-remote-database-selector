@@ -14,13 +14,14 @@
 
 package remote.tasks;
 
+import java.awt.EventQueue;
+
 import java.nio.file.Paths;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import javax.swing.JOptionPane;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -62,14 +63,16 @@ public class CreateTunnelTask extends Task {
 
 			Process process = processBuilder.start();
 
-			if (JOptionPane.showConfirmDialog(
-					null, "click yes to end", "Stop Tunnel",
-					JOptionPane.YES_OPTION) == 0) {
+			final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-				process.destroy();
-			}
+			EventQueue.invokeLater(
+				() -> {
+					new CloseFrame(countDownLatch).setVisible(true);
+				});
 
-			process.waitFor();
+			countDownLatch.await();
+
+			process.destroy();
 		}
 		catch (Exception e) {
 			throw new BuildException(e);
