@@ -2,6 +2,8 @@
 <project name="Liferay-Remote-Database-Selector" default="startDB" basedir="." xmlns:if="ant:if" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:unless="ant:unless">
 	<property file="build-ext.properties" />
 	<property file="build.properties" />
+	<property file="settings.properties" />
+	<property file="settings-ext.properties" />
 
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
 	<taskdef classpath="lib/jsch-0.1.54.jar" resource="net/sf/antcontrib/antlib.xml" />
@@ -29,61 +31,102 @@
 		</sequential>
 	</macrodef>
 
-	<target name="startDB">
-		<compile />
+	<macrodef name="startDB">
+		<sequential>
+			<compile />
 
-		<input unless:set="database.type" message="database: " addproperty="database.type" />
+			<input unless:set="database.type" message="database: " addproperty="database.type" />
 
-		<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
-			<property name="database.type" value="${database.type}" />
-			<property name="todir" value="${portal.dir}/lib/development" />
-		</ant>
+			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+				<property name="database.type" value="${database.type}" />
+				<property name="todir" value="${portal.dir}/lib/development" />
+			</ant>
 
-		<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
-			<property name="database.type" value="${database.type}" />
-			<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
-		</ant>
+			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+				<property name="database.type" value="${database.type}" />
+				<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
+			</ant>
 
-		<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
+			<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
 
-		<createPropertiesTask dbType="${database.type}" />
+			<createPropertiesTask dbType="${database.type}" />
 
-		<if>
-			<or>
-				<equals arg1="${database.type}" arg2="db2" />
-				<equals arg1="${database.type}" arg2="oracle" />
-				<equals arg1="${database.type}" arg2="sybase" />
-			</or>
-			<then>
-				<if>
-					<not>
-						<available file="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db" type="dir" />
-					</not>
-					<then>
-						<copy todir="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db">
-							<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
-						</copy>
-					</then>
-				</if>
+			<if>
+				<or>
+					<equals arg1="${database.type}" arg2="db2" />
+					<equals arg1="${database.type}" arg2="oracle" />
+					<equals arg1="${database.type}" arg2="sybase" />
+				</or>
+				<then>
+					<if>
+						<not>
+							<available file="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db" type="dir" />
+						</not>
+						<then>
+							<copy todir="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db">
+								<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
+							</copy>
+						</then>
+					</if>
 
-				<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
+					<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
 
-				<deploydaodbtask />
+					<deploydaodbtask />
 
-				<sshsession
-					host="${remote.host}"
-				    username="${remote.username}"
-				    password="${remote.password}"
-				    localtunnels="${ssh.tunneling.port}:localhost:${database.port}"
-				>
-				    <sequential>
-						<input message="Press enter to end" addproperty="test" />
-				    </sequential>
-				</sshsession>
+					<sshsession
+						host="${remote.host}"
+					    username="${remote.username}"
+					    password="${remote.password}"
+					    localtunnels="${ssh.tunneling.port}:localhost:${database.port}"
+					>
+					    <sequential>
+							<input message="Press enter to end" addproperty="test" />
+					    </sequential>
+					</sshsession>
 
-				<delete dir="${portal.dir}/modules/private" quiet="true" />
-			</then>
-		</if>
+					<delete dir="${portal.dir}/modules/private" quiet="true" />
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<target name="startDB-db2">
+		<property name="database.type" value="db2" />
+		<property name="database.port" value="${db2.port}" />
+
+		<startDB />
+	</target>
+
+	<target name="startDB-mysql">
+		<property name="database.type" value="mysql" />
+
+		<property name="database.port" value="${mysql.port}" />
+
+		<startDB />
+	</target>
+
+	<target name="startDB-oracle">
+		<property name="database.type" value="oracle" />
+
+		<property name="database.port" value="${oracle.port}" />
+
+		<startDB />
+	</target>
+
+	<target name="startDB-postgresql">
+		<property name="database.type" value="postgresql" />
+
+		<property name="database.port" value="${postgresql.port}" />
+
+		<startDB />
+	</target>
+
+	<target name="startDB-sybase">
+		<property name="database.type" value="sybase" />
+
+		<property name="database.port" value="${sybase.port}" />
+
+		<startDB />
 	</target>
 
 	<!-- Use portal's source formatter to format source. -->
