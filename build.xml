@@ -33,6 +33,94 @@
 		</sequential>
 	</macrodef>
 
+	<macrodef name="deploy-to-node">
+		<sequential>
+			<delete dir="bundle" quiet="true" />
+
+			<copy todir="bundle/sql">
+				<fileset dir="${portal.dir}/sql">
+					<exclude name="sql.${user.name}.properties" />
+				</fileset>
+			</copy>
+
+			<copy file="sql.properties" tofile="bundle/sql/sql.${remote.host}.lax.liferay.com.properties" />
+
+			<delete dir="deploy" quiet="true" />
+
+			<mkdir dir="deploy" />
+
+			<tar longfile="gnu" destfile="deploy/sql.tar" basedir="bundle" />
+
+			<remote-call
+				command="rm -rf ~/${remote.workdir}; mkdir ~/${remote.workdir}"
+				timeout="0"
+				failonerror="false"
+			/>
+
+			<scp todir="${remote.username}:${remote.password}@${remote.host}:~/${remote.workdir}" trust="true">
+				<fileset dir="deploy" />
+			</scp>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="rebuild-db">
+		<attribute name="database.type" />
+
+		<sequential>
+			<copy todir="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db">
+				<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
+			</copy>
+
+			<ant antfile="${portal.dir}/sql/build.xml" dir="${portal.dir}/sql" target="build-db">
+				<property name="database.types" value="@{database.type}" />
+			</ant>
+
+			<deploy-to-node />
+
+			<remote-call
+				command="rm -rf ${remote.portal}/sql; tar -C ${remote.portal} -xvf remote-sql/sql.tar"
+				timeout="0"
+				failonerror="false"
+			/>
+
+			<if>
+				<equals arg1="@{database.type}" arg2="sybase" />
+				<then>
+					<remote-call
+						command="ant -f ${remote.portal}/build-test-batch.xml -Denv.SYBASE_ASE=${sybase.ase} sybase-service-stop sybase-service-start;"
+						timeout="0"
+						failonerror="false"
+					/>
+				</then>
+			</if>
+
+			<remote-call
+				command="ant -f ${remote.portal}/build-test.xml rebuild-database -Ddatabase.type=@{database.type}"
+				timeout="0"
+				failonerror="false"
+			/>
+
+			<remote-call
+				command="rm -rf ~/${remote.workdir};"
+				timeout="0"
+				failonerror="false"
+			/>
+
+			<delete dir="${portal.dir}/modules/private" quiet="true" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="remote-call">
+		<attribute name="remote.host" default="${remote.host}" />
+		<attribute name="command" />
+		<attribute name="timeout" default="0" />
+		<attribute name="failonerror" />
+
+		<sequential>
+			<sshexec host="@{remote.host}" username="${remote.username}" password="${remote.password}" trust="true" command="@{command}" timeout="@{timeout}" failonerror="@{failonerror}" />
+		</sequential>
+	</macrodef>
+
 	<macrodef name="restore">
 		<sequential>
 			<if>
@@ -118,6 +206,31 @@
 			</if>
 		</sequential>
 	</macrodef>
+
+	<target name="rebuild-db2">
+		<rebuild-db
+			database.type="db2" />
+	</target>
+
+	<target name="rebuild-mysql">
+		<rebuild-db
+			database.type="mysql" />
+	</target>
+
+	<target name="rebuild-oracle">
+		<rebuild-db
+			database.type="oracle" />
+	</target>
+
+	<target name="rebuild-postgresql">
+		<rebuild-db
+			database.type="postgresql" />
+	</target>
+
+	<target name="rebuild-sybase">
+		<rebuild-db
+			database.type="sybase" />
+	</target>
 
 	<target name="startDB-db2">
 		<fail unless="database.db2.password" message="Required property: database.db2.password is not set"/>
