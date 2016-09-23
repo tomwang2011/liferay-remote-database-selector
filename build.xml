@@ -207,6 +207,31 @@
 		</sequential>
 	</macrodef>
 
+	<target name="deploy-db2">
+		<ant target="rebuild-db2" />
+		<ant target="startDB-db2" />
+	</target>
+
+	<target name="deploy-mysql">
+		<ant target="rebuild-mysql" />
+		<ant target="startDB-mysql" />
+	</target>
+
+	<target name="deploy-oracle">
+		<ant target="rebuild-oracle" />
+		<ant target="startDB-oracle" />
+	</target>
+
+	<target name="deploy-postgresql">
+		<ant target="rebuild-postgresql" />
+		<ant target="startDB-postgresql" />
+	</target>
+
+	<target name="deploy-sybase">
+		<ant target="rebuild-sybase" />
+		<ant target="startDB-sybase" />
+	</target>
+
 	<target name="rebuild-db2">
 		<rebuild-db
 			database.type="db2" />
