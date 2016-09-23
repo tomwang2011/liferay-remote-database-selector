@@ -40,11 +40,13 @@
 			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
 				<property name="database.type" value="${database.type}" />
 				<property name="todir" value="${portal.dir}/lib/development" />
+				<property file="test-ext.properties" />
 			</ant>
 
 			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
 				<property name="database.type" value="${database.type}" />
 				<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
+				<property file="test-ext.properties" />
 			</ant>
 
 			<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
