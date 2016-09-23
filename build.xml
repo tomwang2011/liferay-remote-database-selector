@@ -33,6 +33,28 @@
 		</sequential>
 	</macrodef>
 
+	<macrodef name="restore">
+		<sequential>
+			<if>
+				<available file="${portal.dir}/portal-impl/test/portal-test-ext.properties.backup" />
+				<then>
+					<move file="${portal.dir}/portal-impl/test/portal-test-ext.properties.backup" tofile="${portal.dir}/portal-impl/test/portal-test-ext.properties" />
+				</then>
+				<else>
+					<delete file="${portal.dir}/portal-impl/test/portal-test-ext.properties" />
+				</else>
+			</if>
+
+			<if>
+				<available file="${portal.dir}/portal-impl/src/portal-ext.properties" />
+				<then>
+					<copy file="${portal.dir}/portal-impl/src/portal-ext.properties" tofile="${tomcat.dir}/webapps/ROOT/WEB-INF/classes/portal-ext.properties" overwrite="true" />
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+
 	<macrodef name="startDB">
 		<attribute name="database.type" />
 		<attribute name="database.port" />
@@ -90,6 +112,8 @@
 					</sshsession>
 
 					<delete dir="${portal.dir}/modules/private" quiet="true" />
+
+					<restore />
 				</then>
 			</if>
 		</sequential>
