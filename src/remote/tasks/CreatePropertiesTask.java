@@ -48,19 +48,13 @@ public class CreatePropertiesTask extends Task {
 
 			Path portalImplTestPath = portalPath.resolve("portal-impl/test");
 
-			Path portalTestExtBackup = portalImplTestPath.resolve(
-				"portal-test-ext.properties.backup");
-
 			Path portalTestExtPath = portalImplTestPath.resolve(
 				"portal-test-ext.properties");
 
-			if (Files.exists(portalTestExtPath)) {
-				Files.copy(
-					portalTestExtPath, portalTestExtBackup,
-					StandardCopyOption.REPLACE_EXISTING);
-			}
-
-			_createTestExtProperties(portalTestExtPath, _dbType, properties);
+			_createTestExtProperties(
+				portalTestExtPath,
+				Paths.get("deploy", "portal-test-ext.properties"), _dbType,
+				properties);
 
 			Path portalExtPath = portalPath.resolve(
 				"portal-impl/src/portal-ext.properties");
@@ -73,7 +67,8 @@ public class CreatePropertiesTask extends Task {
 				portalExtPath, tomcatPortalExtPath,
 				StandardCopyOption.REPLACE_EXISTING);
 
-			_createTestExtProperties(tomcatPortalExtPath, _dbType, properties);
+			_createTestExtProperties(
+				tomcatPortalExtPath, tomcatPortalExtPath, _dbType, properties);
 		}
 		catch (IOException ioe) {
 			throw new BuildException(ioe);
@@ -85,7 +80,8 @@ public class CreatePropertiesTask extends Task {
 	}
 
 	private static void _createTestExtProperties(
-			Path filePath, String dbType, Properties properties)
+			Path propertiesFilePath, Path generatedPropertiesFilePath,
+			String dbType, Properties properties)
 		throws IOException {
 
 		StringBuilder sb = new StringBuilder();
@@ -114,8 +110,8 @@ public class CreatePropertiesTask extends Task {
 		sb.append(jdbcSettings.getProperty(dbType + ".jdbc.default.password"));
 		sb.append('\n');
 
-		if (Files.exists(filePath)) {
-			List<String> lines = Files.readAllLines(filePath);
+		if (Files.exists(propertiesFilePath)) {
+			List<String> lines = Files.readAllLines(propertiesFilePath);
 
 			for (String line : lines) {
 				if (!line.startsWith("jdbc") &&
@@ -126,18 +122,19 @@ public class CreatePropertiesTask extends Task {
 					sb.append('\n');
 				}
 			}
-
-			Files.delete(filePath);
 		}
 
-		Files.createFile(filePath);
+		Files.deleteIfExists(generatedPropertiesFilePath);
+
+		Files.createFile(generatedPropertiesFilePath);
 
 		String string = StringUtil.replace(
 			sb.toString(), "%ssh.tunneling.port%",
 			properties.getProperty("ssh.tunneling.port"));
 
 		try (BufferedWriter bufferedWriter = Files.newBufferedWriter(
-				filePath, Charset.defaultCharset(), StandardOpenOption.APPEND))
+				generatedPropertiesFilePath, Charset.defaultCharset(),
+				StandardOpenOption.APPEND))
 		{
 			bufferedWriter.append(string);
 		}

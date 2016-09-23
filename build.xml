@@ -124,16 +124,6 @@
 	<macrodef name="restore">
 		<sequential>
 			<if>
-				<available file="${portal.dir}/portal-impl/test/portal-test-ext.properties.backup" />
-				<then>
-					<move file="${portal.dir}/portal-impl/test/portal-test-ext.properties.backup" tofile="${portal.dir}/portal-impl/test/portal-test-ext.properties" />
-				</then>
-				<else>
-					<delete file="${portal.dir}/portal-impl/test/portal-test-ext.properties" />
-				</else>
-			</if>
-
-			<if>
 				<available file="${portal.dir}/portal-impl/src/portal-ext.properties" />
 				<then>
 					<copy file="${portal.dir}/portal-impl/src/portal-ext.properties" tofile="${tomcat.dir}/webapps/ROOT/WEB-INF/classes/portal-ext.properties" overwrite="true" />
@@ -296,6 +286,12 @@
 			database.type="sybase"
 			database.port="${sybase.port}"
 		/>
+	</target>
+
+	<target name="test-class">
+		<ant antfile="${portal.dir}/portal-impl/build.xml" dir="${portal.dir}/portal-impl" target="test-class">
+			<property name="test.properties" location="deploy/portal-test-ext.properties" />
+		</ant>
 	</target>
 
 	<!-- Use portal's source formatter to format source. -->
