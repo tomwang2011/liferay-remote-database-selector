@@ -4,6 +4,8 @@
 	<property file="build.properties" />
 
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
+	<taskdef classpath="lib/jsch-0.1.54.jar" resource="net/sf/antcontrib/antlib.xml" />
+
 
 	<fail unless="portal-ee.dir" message="Required property: portal-ee.dir is not set, please set it to your Portal-EE directory"/>
 	<fail unless="tomcat.dir" message="Required property: tomcat.dir is not set, please set it to your tomcat directory"/>
@@ -68,9 +70,16 @@
 
 				<deploydaodbtask />
 
-				<taskdef name="createTunnelTask" classname="remote.tasks.CreateTunnelTask" classpath="classes" />
-
-				<createTunnelTask dbType="${database.type}" />
+				<sshsession
+					host="${remote.host}"
+				    username="${remote.username}"
+				    password="${remote.password}"
+				    localtunnels="${ssh.tunneling.port}:localhost:${database.port}"
+				>
+				    <sequential>
+						<input message="Press enter to end" />
+				    </sequential>
+				</sshsession>
 
 				<delete dir="${portal.dir}/modules/private" quiet="true" />
 			</then>
