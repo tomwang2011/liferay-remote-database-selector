@@ -9,13 +9,20 @@
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
 	<taskdef classpath="lib/jsch-0.1.54.jar" resource="net/sf/antcontrib/antlib.xml" />
 
-
 	<fail unless="portal-ee.dir" message="Required property: portal-ee.dir is not set, please set it to your Portal-EE directory"/>
 	<fail unless="tomcat.dir" message="Required property: tomcat.dir is not set, please set it to your tomcat directory"/>
 	<fail unless="lp.plugins.dir" message="Required property: lp.plugins.dir is not set, please set it to your liferay-plugins directory"/>
 	<fail unless="remote.host" message="Required property: remote.host is not set"/>
 	<fail unless="remote.portal" message="Required property: remote.portal is not set"/>
 	<fail unless="test.jdbc.drivers.url" message="Required property: test.jdbc.drivers.url is not set"/>
+
+	<fail message="Please check if liferay-portal-ee is on the latest ee-7.0.x branch">
+		<condition>
+			<not>
+				<available file="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" type="dir" />
+			</not>
+		</condition>
+	</fail>
 
 	<path id="ivy.lib.path">
 		<fileset dir="lib" includes="ivy-2.4.0.jar" />
