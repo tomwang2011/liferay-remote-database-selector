@@ -183,23 +183,23 @@
 					<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
 
 					<deploydaodbtask />
-
-					<sshsession
-						host="${remote.host}"
-					    username="${remote.username}"
-					    password="${remote.password}"
-					    localtunnels="${ssh.tunneling.port}:localhost:@{database.port}"
-					>
-					    <sequential>
-							<input message="Press enter to end" />
-					    </sequential>
-					</sshsession>
-
-					<delete dir="${portal.dir}/modules/private" quiet="true" />
-
-					<restore />
 				</then>
 			</if>
+
+			<sshsession
+				host="${remote.host}"
+				username="${remote.username}"
+				password="${remote.password}"
+				localtunnels="${ssh.tunneling.port}:localhost:@{database.port}"
+			>
+				<sequential>
+					<input message="Press enter to end" />
+				</sequential>
+			</sshsession>
+
+			<delete dir="${portal.dir}/modules/private" quiet="true" />
+
+			<restore />
 		</sequential>
 	</macrodef>
 
