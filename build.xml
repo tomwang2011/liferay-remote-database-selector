@@ -4,7 +4,6 @@
 	<property file="build.properties" />
 	<property file="settings-ext.properties" />
 	<property file="settings.properties" />
-	<property file="test-ext.properties" />
 
 	<taskdef classpath="lib/ant-contrib.jar" resource="net/sf/antcontrib/antlib.xml" />
 	<taskdef classpath="lib/jsch-0.1.54.jar" resource="net/sf/antcontrib/antlib.xml" />
@@ -150,13 +149,13 @@
 			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
 				<property name="database.type" value="@{database.type}" />
 				<property name="todir" value="${portal.dir}/lib/development" />
-				<property file="test-ext.properties" />
+				<property file="build-ext.properties" />
 			</ant>
 
 			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
 				<property name="database.type" value="@{database.type}" />
 				<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
-				<property file="test-ext.properties" />
+				<property file="build-ext.properties" />
 			</ant>
 
 			<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
