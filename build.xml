@@ -84,7 +84,7 @@
 			<deploy-to-node />
 
 			<remote-call
-				command="rm -rf ${remote.portal}/sql; tar -C ${remote.portal} -xvf remote-sql/sql.tar"
+				command="rm -rf ${remote.portal}/sql; tar -C ${remote.portal} -xvf ${remote.workdir}/sql.tar"
 				timeout="0"
 				failonerror="false"
 			/>
