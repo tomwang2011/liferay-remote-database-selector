@@ -111,8 +111,6 @@
 				timeout="0"
 				failonerror="false"
 			/>
-
-			<delete dir="${portal.dir}/modules/private" quiet="true" />
 		</sequential>
 	</macrodef>
 
@@ -197,7 +195,14 @@
 				</sequential>
 			</sshsession>
 
-			<delete dir="${portal.dir}/modules/private" quiet="true" />
+			<if>
+				<not>
+					<equals arg1="${portal.dir}" arg2="${portal-ee.dir}" />
+				</not>
+				<then>
+					<delete dir="${portal.dir}/modules/private" quiet="true" />
+				</then>
+			</if>
 
 			<restore />
 		</sequential>
