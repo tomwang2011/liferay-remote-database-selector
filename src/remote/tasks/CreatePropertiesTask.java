@@ -114,7 +114,10 @@ public class CreatePropertiesTask extends Task {
 			List<String> lines = Files.readAllLines(propertiesFilePath);
 
 			for (String line : lines) {
-				if (!line.startsWith("jdbc") &&
+				if (!line.startsWith("jdbc.default.driverClassName") &&
+					!line.startsWith("jdbc.default.url") &&
+					!line.startsWith("jdbc.default.username") &&
+					!line.startsWith("jdbc.default.password") &&
 					!line.startsWith("liferay.home") &&
 					!line.startsWith("lp.plugins.dir")) {
 
