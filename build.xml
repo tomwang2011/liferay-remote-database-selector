@@ -15,10 +15,10 @@
 	<fail unless="remote.portal" message="Required property: remote.portal is not set"/>
 	<fail unless="test.jdbc.drivers.url" message="Required property: test.jdbc.drivers.url is not set"/>
 
-	<fail message="Please check if liferay-portal-ee is on the latest ee-7.0.x branch">
+	<fail message="Cannot find: ${portal-ee.dir}/modules/private/apps/portal/portal-dao-db">
 		<condition>
 			<not>
-				<available file="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" type="dir" />
+				<available file="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
 			</not>
 		</condition>
 	</fail>
