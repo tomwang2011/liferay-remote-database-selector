@@ -73,8 +73,8 @@
 		<attribute name="database.type" />
 
 		<sequential>
-			<copy todir="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db">
-				<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
+			<copy todir="${portal.dir}/modules/private/apps/portal/portal-dao-db">
+				<fileset dir="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" />
 			</copy>
 
 			<ant antfile="${portal.dir}/sql/build.xml" dir="${portal.dir}/sql" target="build-db">
@@ -169,11 +169,11 @@
 				<then>
 					<if>
 						<not>
-							<available file="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db" type="dir" />
+							<available file="${portal.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
 						</not>
 						<then>
-							<copy todir="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db">
-								<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
+							<copy todir="${portal.dir}/modules/private/apps/portal/portal-dao-db">
+								<fileset dir="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" />
 							</copy>
 						</then>
 					</if>
