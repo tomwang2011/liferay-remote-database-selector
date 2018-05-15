@@ -55,7 +55,7 @@ public class DeployDaoDBTask extends Task {
 
 			Path daoDBPath = portalPath.resolve(
 				Paths.get(
-					"modules/private/apps/foundation/portal/" +
+					"modules/private/apps/portal/" +
 						"portal-dao-db"));
 
 			processBuilder.directory(daoDBPath.toFile());
