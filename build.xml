@@ -209,6 +209,86 @@
 		</sequential>
 	</macrodef>
 
+	<target name="startDB-sybase-62">
+		<fail unless="database.sybase.password" message="Required property: database.sybase.password is not set"/>
+
+		<startDB-62
+			database.type="sybase"
+			database.port="${sybase.port}"
+		/>
+	</target>
+
+	<macrodef name="startDB-62">
+		<attribute name="database.type" />
+		<attribute name="database.port" />
+
+		<sequential>
+			<compile />
+
+			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+				<property name="database.type" value="@{database.type}" />
+				<property name="todir" value="${portal.dir}/lib/development" />
+				<property file="build-ext.properties" />
+			</ant>
+
+			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+				<property name="database.type" value="@{database.type}" />
+				<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
+				<property file="build-ext.properties" />
+			</ant>
+
+			<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
+
+			<createPropertiesTask dbType="@{database.type}" />
+
+			<!-- <if>
+				<or>
+					<equals arg1="@{database.type}" arg2="db2" />
+					<equals arg1="@{database.type}" arg2="oracle" />
+					<equals arg1="@{database.type}" arg2="sybase" />
+				</or>
+				<then>
+					<if>
+						<not>
+							<available file="${portal.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
+						</not>
+						<then>
+							<copy todir="${portal.dir}/modules/private/apps/portal/portal-dao-db">
+								<fileset dir="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" />
+							</copy>
+						</then>
+					</if>
+
+					<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
+
+					<deploydaodbtask />
+				</then>
+			</if> -->
+
+			<sshsession
+				host="${remote.host}"
+				username="${remote.username}"
+				password="${remote.password}"
+				localtunnels="${ssh.tunneling.port}:localhost:@{database.port}"
+			>
+				<sequential>
+					<input message="Press enter to end" />
+				</sequential>
+			</sshsession>
+
+			<if>
+				<not>
+					<equals arg1="${portal.dir}" arg2="${portal-ee.dir}" />
+				</not>
+				<then>
+					<delete dir="${portal.dir}/modules/private" quiet="true" />
+				</then>
+			</if>
+
+			<restore />
+		</sequential>
+	</macrodef>
+
 	<target name="rebuild-db2">
 		<rebuild-db
 			database.type="db2" />
@@ -242,6 +322,13 @@
 			database.type="sybase" />
 
 		<ant target="startDB-sybase" />
+	</target>
+
+	<target name="rebuild-sybase-62">
+		<rebuild-db
+			database.type="sybase" />
+
+		<ant target="startDB-sybase-62" />
 	</target>
 
 	<target name="startDB-db2">
