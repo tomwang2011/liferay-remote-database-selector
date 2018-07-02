@@ -79,6 +79,7 @@
 
 			<ant antfile="${portal.dir}/sql/build.xml" dir="${portal.dir}/sql" target="build-db">
 				<property name="database.types" value="@{database.type}" />
+				<property name="setup.binaries.cache.executed" value="true" />
 			</ant>
 
 			<deploy-to-node />
