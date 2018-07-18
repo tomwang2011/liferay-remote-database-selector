@@ -39,6 +39,24 @@
 		</sequential>
 	</macrodef>
 
+	<macrodef name="copyOptionalJars">
+		<attribute name="database.type" />
+
+		<sequential>
+			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+				<property name="database.type" value="@{database.type}" />
+				<property name="todir" value="${portal.dir}/lib/development" />
+				<property file="build-ext.properties" />
+			</ant>
+
+			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
+				<property name="database.type" value="@{database.type}" />
+				<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
+				<property file="build-ext.properties" />
+			</ant>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="deploy-to-node">
 		<sequential>
 			<delete dir="bundle" quiet="true" />
@@ -137,7 +155,6 @@
 		</sequential>
 	</macrodef>
 
-
 	<macrodef name="startDB">
 		<attribute name="database.type" />
 		<attribute name="database.port" />
@@ -145,17 +162,7 @@
 		<sequential>
 			<compile />
 
-			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
-				<property name="database.type" value="@{database.type}" />
-				<property name="todir" value="${portal.dir}/lib/development" />
-				<property file="build-ext.properties" />
-			</ant>
-
-			<ant antfile="${portal.dir}/build-test.xml" dir="${portal.dir}" target="copy-optional-jars">
-				<property name="database.type" value="@{database.type}" />
-				<property name="todir" value="${tomcat.dir}/webapps/ROOT/WEB-INF/lib" />
-				<property file="build-ext.properties" />
-			</ant>
+			<copyOptionalJars database.type="@{database.type}" />
 
 			<taskdef name="createPropertiesTask" classname="remote.tasks.CreatePropertiesTask" classpath="classes" />
 
@@ -288,6 +295,42 @@
 			<restore />
 		</sequential>
 	</macrodef>
+
+	<target name="deploy-drivers">
+		<if>
+			<isset property="database.type" />
+			<then>
+				<copyOptionalJars database.type="${database.type}" />
+			</then>
+			<else>
+				<echo>Please include database.name property!</echo>
+			</else>
+		</if>
+
+        <if>
+			<or>
+				<equals arg1="${database.type}" arg2="db2" />
+				<equals arg1="${database.type}" arg2="oracle" />
+				<equals arg1="${database.type}" arg2="sybase" />
+			</or>
+			<then>
+				<if>
+					<not>
+						<available file="${portal.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
+					</not>
+					<then>
+						<copy todir="${portal.dir}/modules/private/apps/portal/portal-dao-db">
+							<fileset dir="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" />
+						</copy>
+					</then>
+				</if>
+
+				<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
+
+				<deploydaodbtask />
+			</then>
+		</if>
+	</target>
 
 	<target name="rebuild-db2">
 		<rebuild-db
