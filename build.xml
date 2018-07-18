@@ -304,6 +304,8 @@
 			</then>
 			<else>
 				<echo>Please include database.name property!</echo>
+
+				<fail />
 			</else>
 		</if>
 
