@@ -1,0 +1,54 @@
+# VirtualBox setup:
+
+1. Obtain a copy of the VM from network drive, unzip the vmdk and vmx file
+2. In virtualbox, create a new virtual machine.
+3. Give it a name and select windows 2008, press next.
+4. Leave memory at 2GB and press next.
+5. Select "Use an existing virtual hard disk file" and choose the vmdk from step 1, then press create.
+6. Click settings-> Network, change Attached to field to Bridged Adapter, click ok.
+7. Start the VM.
+
+# Database selector setup:
+
+1. Edit build-ext.properties for the following settings:
+2. portal.dir: this should point to the source of the bundle you intent on running.
+3. portal-ee.dir: this should point to the source that contains "modules/private/apps/portal/portal-dao-db" module. (This module will be copied to portal.dir in the previous step and deployed to the app server of that bundle)
+4. liferay.home: this should point to the bundle built from the source in step 2.
+5. tomcat.dir: this should point to the tomcat directory of the bundle in step 4.
+6. Once all the properties are set, call "ant deploy-drivers -Ddatabase.name=dbname", where dbname is the name of the database you want to test, such as "ant deploy-drivers -Ddatabase.name=sybase"
+
+# Local bundle setup:
+
+1. Open vm.properties in the database-selector and copy the settings for the database you are testing.
+2. Paste and replace in the portal-ext.properties of your bundle.
+3. Replace the {ip} token with the ip address of your VM. The IP address can be found using the command: "ipconfig" in powershell of the VM, look for "ipv4 address".
+4. Start tomcat and it should populate the database with default values.
+
+# Resetting VM databases
+
+Simple way is to delete the current vmdk file and unzip a new one to replace it (requires shutting down VM and reboot). 
+
+## Resetting DB2 within VM:
+
+1. Run "Reset.bat" from the desktop to drop and create a new database named "lportal" or use manual method from step 2.
+2. Manual reset: Click start and select "DB2 Command Line Processor".
+3. Drop database with: "drop database lportal"
+4. Create new database with: "create database lportal pagesize 32768 temporary tablespace managed by automatic storage" (you can replace lportal with another name, make sure to modify portal-ext.properties with the new name)
+5. Exit with "quit"
+
+## Resetting Oracle within VM:
+
+1. Run "Reset.bat" from the desktop to drop and create a new user named "lportal" with password "lportal" or use manual method from step 2.
+2. Open powershell and start "sqlplus".
+3. Use username "system" and password "password" when prompted.
+4. Once connected, drop database with: "drop user lportal cascade;"
+5. Create a new database with: "create user lportal identified by lportal;" (the first lportal is the username, second lportal is the password. Both are used in portal-ext.properties)
+6. Grant privileges with "grant all privileges to lportal;" (lportal is the username used in step 4).
+7. Exit sqlplus using "exit"
+
+## Resetting Sybase within VM:
+
+1. Run "Reset.bat" from the desktop to drop and create a new database nameed "lportal" and set the default settings to this database.
+2. If you want to use a different database name, run "generate.bat", it will prompt you to enter the new DB name.
+3. The generated settings will be in "generate.txt", copy the data from this file into "reset.sql".
+4. Run "Reset.bat" after replacing the data in reset.sql to generate the new database.
