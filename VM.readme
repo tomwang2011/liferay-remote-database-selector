@@ -15,7 +15,7 @@
 3. portal-ee.dir: this should point to the source that contains "modules/private/apps/portal/portal-dao-db" module. (This module will be copied to portal.dir in the previous step and deployed to the app server of that bundle)
 4. liferay.home: this should point to the bundle built from the source in step 2.
 5. tomcat.dir: this should point to the tomcat directory of the bundle in step 4.
-6. Once all the properties are set, call "ant deploy-drivers -Ddatabase.name=dbname", where dbname is the name of the database you want to test, such as "ant deploy-drivers -Ddatabase.name=sybase"
+6. Once all the properties are set, call "ant deploy-drivers -Ddatabase.type=dbname", where dbname is the name of the database you want to test, such as "ant deploy-drivers -Ddatabase.type=sybase"
 
 # Local bundle setup:
 
