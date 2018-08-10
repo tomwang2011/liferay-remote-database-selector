@@ -327,15 +327,32 @@
 			</or>
 			<then>
 				<if>
-					<not>
-						<available file="${portal.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
-					</not>
+					<and>
+						<not>
+							<available file="${portal.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
+						</not>
+						<available file="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" />
+					</and>
 					<then>
 						<copy todir="${portal.dir}/modules/private/apps/portal/portal-dao-db">
 							<fileset dir="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" />
 						</copy>
 					</then>
+					<elseif>
+						<and>
+							<not>
+								<available file="${portal.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
+							</not>
+							<available file="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
+						</and>
+						<then>
+							<copy todir="${portal.dir}/modules/private/apps/portal/portal-dao-db">
+								<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
+							</copy>
+						</then>
+					</elseif>
 				</if>
+
 
 				<taskdef name="deploydaodbtask" classname="remote.tasks.DeployDaoDBTask" classpath="classes" />
 
