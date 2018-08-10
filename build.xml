@@ -17,9 +17,15 @@
 
 	<fail message="Cannot find: ${portal-ee.dir}/modules/private/apps/portal/portal-dao-db">
 		<condition>
-			<not>
-				<available file="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
-			</not>
+			<and>
+				<not>
+					<available file="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" type="dir" />
+				</not>
+				<not>
+					<available file="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" type="dir" />
+				</not>
+			</and>
+
 		</condition>
 	</fail>
 
@@ -93,6 +99,10 @@
 		<sequential>
 			<copy todir="${portal.dir}/modules/private/apps/portal/portal-dao-db">
 				<fileset dir="${portal-ee.dir}/modules/private/apps/portal/portal-dao-db" />
+			</copy>
+
+			<copy todir="${portal.dir}/modules/private/apps/foundation/portal/portal-dao-db">
+				<fileset dir="${portal-ee.dir}/modules/private/apps/foundation/portal/portal-dao-db" />
 			</copy>
 
 			<ant antfile="${portal.dir}/sql/build.xml" dir="${portal.dir}/sql" target="build-db">
