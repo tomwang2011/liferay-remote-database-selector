@@ -8,6 +8,12 @@
 6. Click settings-> Network, change Attached to field to Bridged Adapter, click ok.
 7. Start the VM.
 
+# VMware player setup:
+1. Obtain a copy of the VM from network drive, unzip the vmdk and vmx file
+2. In vmware player, select Open a Virtual Machine
+3. Select the vmx file from step 1.
+4. Start the VM.
+
 # Database selector setup:
 
 1. Edit build-ext.properties for the following settings:
