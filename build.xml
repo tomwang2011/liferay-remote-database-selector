@@ -313,7 +313,7 @@
 				<copyOptionalJars database.type="${database.type}" />
 			</then>
 			<else>
-				<echo>Please include database.name property!</echo>
+				<echo>Please include database.type property!</echo>
 
 				<fail />
 			</else>
